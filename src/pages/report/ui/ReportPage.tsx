@@ -8,7 +8,6 @@ import {
   Cell,
   Tooltip,
   ResponsiveContainer,
-  Legend,
 } from 'recharts'
 import { getScan, getVulnerabilities } from '../../../api/scanApi'
 import type { Vulnerability, RiskLevel } from '../../../types/scan'
