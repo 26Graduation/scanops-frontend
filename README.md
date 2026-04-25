@@ -1,73 +1,51 @@
-# React + TypeScript + Vite
+# scanops-frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+ScanOps 프론트엔드 — React TS + Vite + Tailwind CSS
 
-Currently, two official plugins are available:
+## 기술 스택
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- React 18 + TypeScript
+- Vite (빌드 툴)
+- Tailwind CSS v4 (`@tailwindcss/vite`)
+- React Router v6
+- Recharts (차트)
+- FSD(Feature-Sliced Design) 아키텍처
 
-## React Compiler
+## 폴더 구조 (FSD)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+src/
+├── app/            ← 라우터
+├── pages/          ← 슬라이스별 페이지 (landing, scan, scan-status, report, reports)
+├── widgets/        ← 복합 UI 블록 (vuln-table, vuln-chart)
+├── features/       ← 유저 액션 (scan-request)
+├── entities/       ← 비즈니스 엔티티 (scan, vulnerability)
+└── shared/         ← 공통 (api/httpClient, ui/CvssGauge)
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 로컬 실행
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+cp .env.example .env.local
+# .env.local 에서 VITE_API_BASE_URL 수정 (백엔드 주소)
+npm run dev
 ```
+
+## Vercel 배포
+
+1. [vercel.com](https://vercel.com) → New Project → Import `scanops-frontend`
+2. Framework Preset: **Vite** (자동 감지)
+3. 환경변수 설정:
+   ```
+   VITE_API_BASE_URL = https://your-backend.up.railway.app
+   ```
+4. Deploy → 완료
+
+> `vercel.json`의 rewrites 설정으로 SPA 라우팅(React Router)이 정상 동작합니다.
+
+## 환경변수
+
+| 변수 | 설명 |
+|------|------|
+| `VITE_API_BASE_URL` | 백엔드 API 베이스 URL |
