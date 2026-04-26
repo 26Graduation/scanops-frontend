@@ -9,7 +9,8 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts'
-import { getScan, getVulnerabilities } from '../../../api/scanApi'
+import { getScan, getVulnerabilities, generateVulnMeta } from '../../../api/scanApi'
+import type { VulnMeta as AiVulnMeta } from '../../../api/scanApi'
 import type { Vulnerability, RiskLevel } from '../../../types/scan'
 import { getVulnMeta } from './vulnMeta'
 
@@ -130,9 +131,14 @@ function VulnPieChart({ vulns }: { vulns: Vulnerability[] }) {
 
 function VulnDetailModal({ vuln, onClose }: { vuln: Vulnerability; onClose: () => void }) {
   const overlayRef = useRef<HTMLDivElement>(null)
-  const meta = getVulnMeta(vuln.vulnType)
+  const hardcodedMeta = getVulnMeta(vuln.vulnType)
   const color = RISK_COLOR[vuln.riskLevel]
   const cvssCol = cvssColor(vuln.cvssScore)
+
+  const [aiMeta, setAiMeta] = useState<AiVulnMeta | null>(null)
+  const [metaLoading, setMetaLoading] = useState(false)
+
+  const needsAi = !hardcodedMeta && !vuln.description && !vuln.summary
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
@@ -143,6 +149,15 @@ function VulnDetailModal({ vuln, onClose }: { vuln: Vulnerability; onClose: () =
       document.body.style.overflow = ''
     }
   }, [onClose])
+
+  useEffect(() => {
+    if (!needsAi) return
+    setMetaLoading(true)
+    generateVulnMeta(vuln.id)
+      .then(setAiMeta)
+      .catch(() => setAiMeta(null))
+      .finally(() => setMetaLoading(false))
+  }, [vuln.id, needsAi])
 
   return (
     <div
@@ -174,9 +189,9 @@ function VulnDetailModal({ vuln, onClose }: { vuln: Vulnerability; onClose: () =
 
         <div className="p-6 space-y-6">
           {/* Summary */}
-          {vuln.summary && (
+          {(vuln.summary || aiMeta?.summary) && (
             <p className="text-sm text-gray-300 bg-gray-800/60 rounded-lg px-4 py-3 leading-relaxed border-l-2 border-gray-600">
-              {vuln.summary}
+              {vuln.summary ?? aiMeta?.summary}
             </p>
           )}
 
@@ -188,41 +203,49 @@ function VulnDetailModal({ vuln, onClose }: { vuln: Vulnerability; onClose: () =
           </div>
 
           {/* Cause / Remedy */}
-          {meta ? (
+          {hardcodedMeta ? (
             <>
               <Section title="발생 원인" icon="🔎" color="#f97316">
-                <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap">{meta.cause}</p>
+                <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap">{hardcodedMeta.cause}</p>
               </Section>
               <Section title="해결 방법" icon="🛠️" color="#22c55e">
-                <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap">{meta.remedy}</p>
-                {meta.reference && (
-                  <a
-                    href={meta.reference}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-block mt-3 text-xs text-cyan-400 hover:underline"
-                  >
+                <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap">{hardcodedMeta.remedy}</p>
+                {hardcodedMeta.reference && (
+                  <a href={hardcodedMeta.reference} target="_blank" rel="noopener noreferrer"
+                    className="inline-block mt-3 text-xs text-cyan-400 hover:underline">
                     참고 문서 →
                   </a>
                 )}
               </Section>
             </>
-          ) : vuln.description || vuln.solution ? (
+          ) : (vuln.description || aiMeta?.description) ? (
             <>
-              {vuln.description && (
+              {(vuln.description || aiMeta?.description) && (
                 <Section title="발생 원인" icon="🔎" color="#f97316">
-                  <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap">{vuln.description}</p>
+                  <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap">
+                    {vuln.description ?? aiMeta?.description}
+                  </p>
                 </Section>
               )}
-              {vuln.solution && (
+              {(vuln.solution || aiMeta?.solution) && (
                 <Section title="해결 방법" icon="🛠️" color="#22c55e">
-                  <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap">{vuln.solution}</p>
+                  <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap">
+                    {vuln.solution ?? aiMeta?.solution}
+                  </p>
                 </Section>
               )}
             </>
+          ) : metaLoading ? (
+            <div className="flex items-center gap-2 text-xs text-gray-500 bg-gray-800/50 rounded-lg px-4 py-3">
+              <svg className="animate-spin w-3.5 h-3.5 text-green-400 flex-shrink-0" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+              </svg>
+              AI가 취약점 설명을 생성하고 있습니다...
+            </div>
           ) : (
             <div className="text-xs text-gray-600 bg-gray-800/50 rounded-lg px-4 py-3">
-              이 취약점 유형에 대한 상세 설명이 아직 준비되지 않았습니다.
+              설명을 불러오지 못했습니다.
             </div>
           )}
 

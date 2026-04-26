@@ -17,3 +17,12 @@ export const getScan = (id: string): Promise<Scan> =>
 
 export const getVulnerabilities = (id: string): Promise<Vulnerability[]> =>
   api.get<Vulnerability[]>(`/api/scans/${id}/vulnerabilities`).then((r) => r.data)
+
+export interface VulnMeta {
+  summary: string | null
+  description: string | null
+  solution: string | null
+}
+
+export const generateVulnMeta = (vulnId: string): Promise<VulnMeta> =>
+  api.post<VulnMeta>(`/api/vulnerabilities/${vulnId}/meta`).then((r) => r.data)
