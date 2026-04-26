@@ -19,6 +19,7 @@ export interface Vulnerability {
   riskLevel: RiskLevel
   cvssScore: number
   cvssVector: string
+  summary: string | null
   description: string | null
   solution: string | null
   aiAnalysis: string | null
