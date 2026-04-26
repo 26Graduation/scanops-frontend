@@ -73,6 +73,13 @@ const meta: Record<string, VulnMeta> = {
     remedy:
       '라이브러리를 최신 보안 패치 버전으로 업데이트하세요. `npm audit` 또는 Snyk, Dependabot 등의 도구로 정기적으로 의존성 취약점을 점검하세요.',
   },
+  'HTTPS Content Available via HTTP': {
+    cause:
+      'HTTPS로 제공되는 사이트의 콘텐츠가 HTTP로도 접근 가능합니다. HTTP는 암호화되지 않아 중간자(MITM) 공격자가 전송 중인 데이터를 도청하거나 변조할 수 있습니다. 또한 HSTS가 설정되지 않은 경우 SSL 스트리핑 공격으로 HTTPS 연결을 강제로 HTTP로 다운그레이드할 수 있습니다.',
+    remedy:
+      '모든 HTTP 요청을 HTTPS로 리다이렉트하도록 서버를 설정하세요.\n- Nginx: `return 301 https://$host$request_uri;`\n- Apache: `RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]`\n\n추가로 `Strict-Transport-Security: max-age=31536000; includeSubDomains` 헤더를 설정해 브라우저가 이후 요청을 항상 HTTPS로 전송하도록 강제하세요.',
+    reference: 'https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/09-Testing_for_Weak_Cryptography/02-Testing_for_Padding_Oracle',
+  },
 }
 
 export function getVulnMeta(vulnType: string): VulnMeta | null {
