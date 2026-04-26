@@ -180,7 +180,7 @@ function VulnDetailModal({ vuln, onClose }: { vuln: Vulnerability; onClose: () =
             {vuln.cvssVector && <InfoRow label="CVSS Vector" value={vuln.cvssVector} mono />}
           </div>
 
-          {/* Cause */}
+          {/* Cause / Remedy */}
           {meta ? (
             <>
               <Section title="발생 원인" icon="🔎" color="#f97316">
@@ -199,6 +199,19 @@ function VulnDetailModal({ vuln, onClose }: { vuln: Vulnerability; onClose: () =
                   </a>
                 )}
               </Section>
+            </>
+          ) : vuln.description || vuln.solution ? (
+            <>
+              {vuln.description && (
+                <Section title="발생 원인" icon="🔎" color="#f97316">
+                  <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap">{vuln.description}</p>
+                </Section>
+              )}
+              {vuln.solution && (
+                <Section title="해결 방법" icon="🛠️" color="#22c55e">
+                  <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap">{vuln.solution}</p>
+                </Section>
+              )}
             </>
           ) : (
             <div className="text-xs text-gray-600 bg-gray-800/50 rounded-lg px-4 py-3">
