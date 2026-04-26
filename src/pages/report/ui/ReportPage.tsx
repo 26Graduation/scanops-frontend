@@ -173,6 +173,13 @@ function VulnDetailModal({ vuln, onClose }: { vuln: Vulnerability; onClose: () =
         </div>
 
         <div className="p-6 space-y-6">
+          {/* Summary */}
+          {vuln.summary && (
+            <p className="text-sm text-gray-300 bg-gray-800/60 rounded-lg px-4 py-3 leading-relaxed border-l-2 border-gray-600">
+              {vuln.summary}
+            </p>
+          )}
+
           {/* URL / Param */}
           <div className="space-y-2">
             <InfoRow label="URL" value={vuln.url} mono />
