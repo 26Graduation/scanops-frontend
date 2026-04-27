@@ -137,7 +137,6 @@ function VulnDetailModal({ vuln, onClose }: { vuln: Vulnerability; onClose: () =
 
   const [aiMeta, setAiMeta] = useState<AiVulnMeta | null>(null)
   const [metaLoading, setMetaLoading] = useState(false)
-
   const needsAi = !hardcodedMeta && !vuln.description && !vuln.summary
 
   useEffect(() => {
@@ -189,9 +188,9 @@ function VulnDetailModal({ vuln, onClose }: { vuln: Vulnerability; onClose: () =
 
         <div className="p-6 space-y-6">
           {/* Summary */}
-          {(vuln.summary || aiMeta?.summary) && (
+          {vuln.summary && (
             <p className="text-sm text-gray-300 bg-gray-800/60 rounded-lg px-4 py-3 leading-relaxed border-l-2 border-gray-600">
-              {vuln.summary ?? aiMeta?.summary}
+              {vuln.summary}
             </p>
           )}
 
@@ -241,11 +240,11 @@ function VulnDetailModal({ vuln, onClose }: { vuln: Vulnerability; onClose: () =
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
               </svg>
-              AI가 취약점 설명을 생성하고 있습니다...
+              설명을 생성하고 있습니다...
             </div>
           ) : (
-            <div className="text-xs text-gray-600 bg-gray-800/50 rounded-lg px-4 py-3">
-              설명을 불러오지 못했습니다.
+            <div className="text-xs text-gray-500 bg-gray-800/50 rounded-lg px-4 py-3">
+              이 취약점 유형에 대한 상세 설명이 아직 준비되지 않았습니다.
             </div>
           )}
 
