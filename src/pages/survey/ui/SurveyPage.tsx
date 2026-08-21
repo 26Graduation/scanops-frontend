@@ -22,7 +22,6 @@ interface Step {
   sub?: string
   options?: Option[]
   placeholder?: string
-  optional?: boolean
   followUp?: FollowUp
   /** 다른 답변에 따라 이 스텝 자체를 건너뛸지. */
   when?: (a: Answers) => boolean
@@ -38,7 +37,7 @@ const QUESTIONS: Step[] = [
   {
     id: 'comparisonVsPrior', type: 'text', eyebrow: '비교',
     title: '이전에 쓰던 서비스와 비교했을 때\nScanOps가 더 낫거나 아쉬웠던 점은?',
-    placeholder: '자유롭게 적어주세요', optional: true,
+    placeholder: '자유롭게 적어주세요',
     when: (a) => a.priorToolUsed === '있다',
   },
   {
@@ -98,12 +97,12 @@ const QUESTIONS: Step[] = [
   {
     id: 'likedPoints', type: 'text', eyebrow: '의견',
     title: 'ScanOps의 어떤 점이\n마음에 드셨나요?',
-    placeholder: '자유롭게 적어주세요', optional: true,
+    placeholder: '자유롭게 적어주세요',
   },
   {
     id: 'wishFeature', type: 'text', eyebrow: '제안',
     title: 'ScanOps를 구독한다면, 추가되었으면 하는 기능이나\n개선되었으면 하는 점이 있나요?',
-    placeholder: '자유롭게 적어주세요', optional: true,
+    placeholder: '자유롭게 적어주세요',
   },
   {
     id: 'missedVuln', type: 'single', eyebrow: '탐지',
@@ -355,7 +354,8 @@ function SingleView({ step, value, followUpValue, onPick, onFollowUpChange, onCo
       {value && (
         <button
           onClick={onContinue}
-          className="mt-4 w-full h-[54px] rounded-2xl bg-brand text-white text-[17px] font-bold hover:bg-brand-hover active:scale-[.99] transition-all"
+          disabled={showFollowUp && !followUpValue.trim()}
+          className="mt-4 w-full h-[54px] rounded-2xl bg-brand text-white text-[17px] font-bold hover:bg-brand-hover active:scale-[.99] transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100"
         >
           {isLast ? '제출하기' : '다음'}
         </button>
@@ -381,15 +381,11 @@ function TextView({ step, value, onChange, onNext, isLast }: {
       <div className="mt-auto pt-8 pb-6">
         <button
           onClick={onNext}
-          className="w-full h-[54px] rounded-2xl bg-brand text-white text-[17px] font-bold hover:bg-brand-hover active:scale-[.99] transition-all"
+          disabled={!value.trim()}
+          className="w-full h-[54px] rounded-2xl bg-brand text-white text-[17px] font-bold hover:bg-brand-hover active:scale-[.99] transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100"
         >
           {isLast ? '제출하기' : '다음'}
         </button>
-        {step.optional && !value.trim() && (
-          <button onClick={onNext} className="w-full text-center text-[14px] font-semibold text-ink-muted mt-2 py-2">
-            건너뛰기
-          </button>
-        )}
       </div>
     </div>
   )
