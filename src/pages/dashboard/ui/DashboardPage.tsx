@@ -6,15 +6,11 @@ import Button from '../../../shared/ui/Button'
 import Icon, { type IconName } from '../../../shared/ui/Icon'
 import Badge from '../../../shared/ui/Badge'
 import ProgressBar from '../../../shared/ui/ProgressBar'
+import TokenBalance from '../../../shared/ui/TokenBalance'
 import { useAuth } from '../../../shared/lib/auth'
-import {
-  MODE_META, SEVERITY_META,
-  relativeTime, type ScanSummary, type Severity, type SeverityCounts,
-} from '../../../shared/lib/mock'
+import { MODE_META, relativeTime, type ScanSummary } from '../../../shared/lib/mock'
 import { fetchRecentScans } from '../../../shared/api/scan'
 import { fetchWallet, type TokenWallet } from '../../../shared/api/tokens'
-
-const SEV_ORDER: Severity[] = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'INFO']
 
 export default function DashboardPage() {
   const navigate = useNavigate()
@@ -26,12 +22,6 @@ export default function DashboardPage() {
     fetchRecentScans().then(setScans)
     fetchWallet().then(setWallet)
   }, [])
-
-  const done = scans?.filter((s) => s.status === 'DONE') ?? []
-  const agg: SeverityCounts = { CRITICAL: 0, HIGH: 0, MEDIUM: 0, LOW: 0, INFO: 0 }
-  done.forEach((s) => SEV_ORDER.forEach((k) => (agg[k] += s.counts[k])))
-  const totalFindings = SEV_ORDER.reduce((a, k) => a + agg[k], 0)
-  const maxCvss = done.reduce((m, s) => Math.max(m, s.maxCvss), 0)
 
   // 마이페이지(MyPage)와 동일하게 "잔여"를 그대로 보여준다 — 지급량에서 역산한 "사용량"은
   // 충전·체험 보너스로 잔여가 월 한도를 넘는 경우 음수가 나와 마이페이지와 값이 어긋났다.
@@ -57,35 +47,16 @@ export default function DashboardPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
-          {/* posture */}
+          {/* token balance */}
           <Card className="lg:col-span-2" pad="lg">
             <div className="flex items-center justify-between">
-              <h2 className="text-[17px] font-bold text-ink">보안 현황</h2>
-              <button onClick={() => navigate('/reports')} className="text-[13px] text-brand font-semibold hover:underline flex items-center gap-1">
-                전체 기록 <Icon name="chevron-right" size={14} />
+              <h2 className="text-[17px] font-bold text-ink">토큰 현황</h2>
+              <button onClick={() => navigate('/mypage')} className="text-[13px] text-brand font-semibold hover:underline flex items-center gap-1">
+                마이페이지 <Icon name="chevron-right" size={14} />
               </button>
             </div>
-            <div className="flex items-center gap-6 mt-4">
-              <div className="text-center shrink-0">
-                <p className="text-[34px] font-bold text-ink tnum leading-none">{totalFindings}</p>
-                <p className="mt-1 text-[12.5px] text-ink-muted">발견된 취약점</p>
-              </div>
-              <div className="w-px h-12 bg-line" />
-              <div className="text-center shrink-0">
-                <p className="text-[34px] font-bold tnum leading-none" style={{ color: maxCvss >= 9 ? 'var(--color-sev-critical)' : 'var(--color-sev-high)' }}>{maxCvss.toFixed(1)}</p>
-                <p className="mt-1 text-[12.5px] text-ink-muted">최고 CVSS</p>
-              </div>
-              <div className="flex-1 min-w-0">
-                <SeverityBar counts={agg} total={totalFindings} />
-                <div className="flex flex-wrap gap-x-4 gap-y-1 mt-3">
-                  {SEV_ORDER.filter((k) => agg[k] > 0).map((k) => (
-                    <span key={k} className="flex items-center gap-1.5 text-[12px] text-ink-sub">
-                      <span className="w-2.5 h-2.5 rounded-full" style={{ background: SEVERITY_META[k].color }} />
-                      {SEVERITY_META[k].label} <b className="text-ink tnum">{agg[k]}</b>
-                    </span>
-                  ))}
-                </div>
-              </div>
+            <div className="mt-4">
+              <TokenBalance wallet={wallet} />
             </div>
           </Card>
 
@@ -177,17 +148,6 @@ function UsageCard({ icon, label, remaining, limit, unit, color, big }: { icon: 
       )}
       <ProgressBar value={pct} color={low ? 'var(--color-warning)' : color} className="mt-2.5" height={6} />
     </Card>
-  )
-}
-
-function SeverityBar({ counts, total }: { counts: SeverityCounts; total: number }) {
-  if (total === 0) return <div className="h-2.5 rounded-full bg-field" />
-  return (
-    <div className="flex h-2.5 rounded-full overflow-hidden bg-field">
-      {SEV_ORDER.map((k) => counts[k] > 0 && (
-        <div key={k} style={{ width: `${(counts[k] / total) * 100}%`, background: SEVERITY_META[k].color }} />
-      ))}
-    </div>
   )
 }
 

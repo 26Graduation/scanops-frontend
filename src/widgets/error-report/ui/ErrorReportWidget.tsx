@@ -83,10 +83,10 @@ export default function ErrorReportWidget() {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="w-[52px] h-[52px] rounded-full bg-ink text-white shadow-[0_6px_20px_rgba(0,0,0,0.25)] flex items-center justify-center hover:opacity-90 transition-opacity"
-        aria-label="오류 신고 열기"
+        className="h-11 px-5 rounded-full bg-ink text-white text-[14px] font-semibold shadow-[0_6px_20px_rgba(0,0,0,0.25)] flex items-center justify-center hover:opacity-90 transition-opacity"
+        aria-label={open ? '오류 신고 닫기' : '오류 신고 열기'}
       >
-        <Icon name={open ? 'x' : 'message-circle'} size={22} />
+        {open ? '닫기' : '오류 신고'}
       </button>
     </div>
   )
