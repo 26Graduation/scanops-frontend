@@ -232,11 +232,11 @@ export default function ScanForm() {
                 </span>
               ) : (
                 <span>
-                  이번 달 DAST 스캔{' '}
+                  DAST 스캔{' '}
                   <Badge tone="brand" size="sm" className="mx-0.5">
-                    {wallet ? `${wallet.dastAvailable} / ${wallet.dastMonthlyLimit}회` : '—'}
+                    {wallet ? `${wallet.dastAvailable}회` : '—'}
                   </Badge>{' '}
-                  남음
+                  더 가능
                 </span>
               )}
             </div>
