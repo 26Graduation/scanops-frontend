@@ -5,8 +5,15 @@ import { useAuth } from '../../../shared/lib/auth'
 import { completeSurvey, fetchSurveyStatus, submitSurvey } from '../../../shared/api/survey'
 
 type StepType = 'intro' | 'single' | 'text' | 'done'
+type Answers = Record<string, string>
 
 interface Option { v: string; label: string }
+interface FollowUp {
+  id: string
+  placeholder: string
+  /** 생략하면 옵션 아무거나 골라도 나타남(예/아니오 둘 다 이유를 묻는 경우). */
+  trigger?: string[]
+}
 interface Step {
   id: string
   type: StepType
@@ -16,42 +23,68 @@ interface Step {
   options?: Option[]
   placeholder?: string
   optional?: boolean
+  followUp?: FollowUp
+  /** 다른 답변에 따라 이 스텝 자체를 건너뛸지. */
+  when?: (a: Answers) => boolean
 }
 
 const QUESTIONS: Step[] = [
   {
-    id: 'priorExperience', type: 'single', eyebrow: '경험',
-    title: '기존에 보안 점검 사이트 또는\n보안 점검 서비스를 이용해보신 적이 있으신가요?',
-    options: [{ v: '있음', label: '있어요' }, { v: '없음', label: '없어요' }],
+    id: 'priorToolUsed', type: 'single', eyebrow: '경험',
+    title: 'ScanOps 이외의 보안 점검 서비스를\n이용해보신 적이 있으신가요?',
+    options: [{ v: '없다', label: '없다' }, { v: '있다', label: '있다' }],
+    followUp: { id: 'priorToolWhat', placeholder: '어떤 서비스를 쓰셨었나요?', trigger: ['있다'] },
+  },
+  {
+    id: 'comparisonVsPrior', type: 'text', eyebrow: '비교',
+    title: '이전에 쓰던 서비스와 비교했을 때\nScanOps가 더 낫거나 아쉬웠던 점은?',
+    placeholder: '자유롭게 적어주세요', optional: true,
+    when: (a) => a.priorToolUsed === '있다',
   },
   {
     id: 'purpose', type: 'single', eyebrow: '목적',
-    title: '무슨 목적으로 쓰시나요?',
+    title: '보안 점검 서비스를 사용한다면\n무슨 목적으로 쓰시나요 / 쓰실 예정인가요?',
     options: [
-      { v: '배포전점검', label: '배포 전 점검' },
-      { v: '실서비스보안점검', label: '실서비스 보안 점검 차 사용' },
-      { v: '개인깃허브점검', label: '개인 GitHub 보안 점검' },
+      { v: '배포전점검', label: '서비스 배포 전 점검용' },
+      { v: '실서비스보안점검', label: '실서비스 보안 점검용 사용' },
+      { v: '개인깃허브점검', label: '개인 GitHub 보안 점검용' },
     ],
   },
   {
     id: 'role', type: 'single', eyebrow: '역할',
-    title: '어떤 역할이신가요?',
+    title: '팀이라면 팀 내에서\n어떤 역할이신가요?',
     options: [
       { v: '개발자', label: '개발자' },
       { v: 'CTO', label: 'CTO' },
       { v: '기획자', label: '기획자' },
       { v: '보안담당자', label: '보안담당자' },
+      { v: '디자이너', label: '디자이너' },
       { v: '기타', label: '기타' },
+    ],
+    followUp: { id: 'roleOther', placeholder: '역할을 적어주세요', trigger: ['기타'] },
+  },
+  {
+    id: 'reportClarity', type: 'single', eyebrow: '리포트',
+    title: '스캔 리포트(결과 화면)를\n이해하기 쉬웠나요?',
+    options: [
+      { v: '매우쉬움', label: '매우 쉬움' },
+      { v: '쉬움', label: '쉬움' },
+      { v: '보통', label: '보통' },
+      { v: '어려움', label: '어려움' },
+      { v: '매우어려움', label: '매우 어려움' },
     ],
   },
   {
+    id: 'falsePositive', type: 'single', eyebrow: '오탐',
+    title: '발견된 취약점 중, 실제로는 문제가 아니라고\n판단한(오탐이라고 느낀) 경우가 있었나요?',
+    options: [{ v: '없다', label: '없다' }, { v: '있다', label: '있다' }],
+    followUp: { id: 'falsePositiveDetail', placeholder: '어떤 부분이 오탐이라고 느끼셨나요?', trigger: ['있다'] },
+  },
+  {
     id: 'continueIntent', type: 'single', eyebrow: '지속 의향',
-    title: '베타 테스트가 끝나도\n계속 사용하실 의향이 있으신가요?',
-    options: [
-      { v: '예', label: '예' },
-      { v: '아니오', label: '아니오' },
-      { v: '성능개선시', label: '좀 더 성능 개선이 되면 사용 의향이 있다' },
-    ],
+    title: '베타 테스트가 끝나도\nScanOps를 계속 사용하실 의향이 있으신가요?',
+    options: [{ v: '예', label: '예' }, { v: '아니오', label: '아니오' }],
+    followUp: { id: 'continueReason', placeholder: '이유를 알려주세요' },
   },
   {
     id: 'recommendIntent', type: 'single', eyebrow: '추천 의향',
@@ -68,9 +101,26 @@ const QUESTIONS: Step[] = [
     placeholder: '자유롭게 적어주세요', optional: true,
   },
   {
-    id: 'suggestedFeature', type: 'text', eyebrow: '제안',
-    title: 'ScanOps를 추천하려면\n이런 기능이 더 있었으면 좋겠다 하는 게 있나요?',
+    id: 'wishFeature', type: 'text', eyebrow: '제안',
+    title: 'ScanOps를 구독한다면, 추가되었으면 하는 기능이나\n개선되었으면 하는 점이 있나요?',
     placeholder: '자유롭게 적어주세요', optional: true,
+  },
+  {
+    id: 'missedVuln', type: 'single', eyebrow: '탐지',
+    title: '이미 알고 있던 취약점 중\nScanOps에서 탐지하지 못한 경우가 있었나요?',
+    options: [{ v: '없다', label: '없다' }, { v: '있다', label: '있다' }],
+    followUp: { id: 'missedVulnDetail', placeholder: '어떤 취약점이었나요?', trigger: ['있다'] },
+  },
+  {
+    id: 'scanSpeed', type: 'single', eyebrow: '속도',
+    title: '스캔 속도에 대해\n만족하시나요?',
+    options: [
+      { v: '매우느림', label: '매우 느림' },
+      { v: '느린편', label: '느린 편' },
+      { v: '적당함', label: '적당함' },
+      { v: '빠른편', label: '빠른 편' },
+      { v: '매우빠름', label: '매우 빠름' },
+    ],
   },
 ]
 
@@ -91,7 +141,7 @@ export default function SurveyPage() {
   const navigate = useNavigate()
   const { user } = useAuth()
   const [i, setI] = useState(0)
-  const [answers, setAnswers] = useState<Record<string, string>>({})
+  const [answers, setAnswers] = useState<Answers>({})
   const [submitting, setSubmitting] = useState(false)
   const [checking, setChecking] = useState(true)
 
@@ -103,12 +153,13 @@ export default function SurveyPage() {
   }, [navigate])
 
   const step = STEPS[i]
+  const isActive = (s: Step) => !s.when || s.when(answers)
   const isQuestion = (s: Step) => s.type !== 'intro' && s.type !== 'done'
-  const qCount = STEPS.filter(isQuestion).length
-  const doneCount = STEPS.slice(0, i).filter(isQuestion).length
-  const pct = step.type === 'done' ? 100 : Math.round((doneCount / qCount) * 100)
+  const qCount = STEPS.filter((s) => isQuestion(s) && isActive(s)).length
+  const doneCount = STEPS.slice(0, i).filter((s) => isQuestion(s) && isActive(s)).length
+  const pct = step.type === 'done' ? 100 : Math.round((doneCount / Math.max(qCount, 1)) * 100)
 
-  const submit = async (finalAnswers: Record<string, string>) => {
+  const submit = async (finalAnswers: Answers) => {
     if (submitting) return
     setSubmitting(true)
     await submitSurvey({
@@ -124,18 +175,26 @@ export default function SurveyPage() {
   }
 
   const goNext = (nextAnswers = answers) => {
-    const j = i + 1
+    let j = i + 1
+    while (j < STEPS.length && STEPS[j].when && !STEPS[j].when!(nextAnswers)) j++
     setI(j)
     if (STEPS[j]?.type === 'done') submit(nextAnswers)
   }
 
+  const back = () => {
+    let j = i - 1
+    while (j >= 0 && STEPS[j].when && !STEPS[j].when!(answers)) j--
+    if (j >= 0) setI(j)
+  }
+
+  const followUpTriggered = (s: Step, v?: string) =>
+    !!s.followUp && !!v && (!s.followUp.trigger || s.followUp.trigger.includes(v))
+
   const pick = (v: string) => {
     const next = { ...answers, [step.id]: v }
     setAnswers(next)
-    setTimeout(() => goNext(next), 220)
+    if (!followUpTriggered(step, v)) setTimeout(() => goNext(next), 220)
   }
-
-  const back = () => { if (i > 0) setI(i - 1) }
 
   if (checking) return <div className="min-h-screen bg-field" />
 
@@ -163,7 +222,15 @@ export default function SurveyPage() {
           {step.type === 'intro' && <IntroView onStart={() => goNext()} />}
           {step.type === 'done' && <DoneView submitting={submitting} onExit={() => navigate('/mypage')} />}
           {step.type === 'single' && (
-            <SingleView step={step} value={answers[step.id]} onPick={pick} />
+            <SingleView
+              step={step}
+              value={answers[step.id]}
+              followUpValue={step.followUp ? (answers[step.followUp.id] ?? '') : ''}
+              onPick={pick}
+              onFollowUpChange={(v) => setAnswers((a) => ({ ...a, [step.followUp!.id]: v }))}
+              onContinue={() => goNext()}
+              isLast={STEPS[i + 1]?.type === 'done'}
+            />
           )}
           {step.type === 'text' && (
             <TextView
@@ -187,13 +254,26 @@ function IntroView({ onStart }: { onStart: () => void }) {
         <Icon name="edit-3" size={32} className="text-white" />
       </div>
       <h1 className="text-[26px] font-extrabold text-ink leading-snug tracking-tight">
-        1분이면 끝나요.<br />베타 사용 경험을<br />들려주세요
+        2분이면 끝나요.<br />베타 사용 경험을<br />들려주세요
       </h1>
       <p className="mt-3 text-[15px] text-ink-muted leading-relaxed">
         ScanOps를 더 잘 만들기 위한 짧은 설문이에요.<br />정답은 없어요.
       </p>
+
+      <div className="w-full mt-6 rounded-2xl bg-brand-soft border border-brand-soft px-5 py-4 flex items-center gap-3.5 text-left">
+        <span className="w-11 h-11 rounded-xl bg-brand text-white flex items-center justify-center shrink-0">
+          <Icon name="zap" size={20} />
+        </span>
+        <div>
+          <p className="text-[15px] font-bold text-brand-press">설문 끝까지 완료하면</p>
+          <p className="text-[13px] text-ink-sub leading-relaxed mt-0.5">
+            정식 출시 때 <b className="text-ink font-bold">SAST 토큰 3만 줄</b>을 지급해드려요.
+          </p>
+        </div>
+      </div>
+
       <div className="inline-flex items-center gap-1.5 bg-white rounded-full px-3.5 py-2 text-[13px] font-semibold text-ink-sub mt-5">
-        ⏱ 약 1분 · 7문항
+        ⏱ 약 2분 · 11문항
       </div>
       <button
         onClick={onStart}
@@ -215,7 +295,8 @@ function DoneView({ submitting, onExit }: { submitting: boolean; onExit: () => v
         설문이 끝났어요!<br />고맙습니다 🙏
       </h1>
       <p className="mt-3 text-[15px] text-ink-muted leading-relaxed">
-        들려주신 이야기로 ScanOps를<br />더 쓸모 있게 만들게요.
+        들려주신 이야기로 ScanOps를<br />더 쓸모 있게 만들게요.<br />
+        정식 출시 때 SAST 토큰 3만 줄을 챙겨드릴게요.
       </p>
       <button
         onClick={onExit}
@@ -228,7 +309,16 @@ function DoneView({ submitting, onExit }: { submitting: boolean; onExit: () => v
   )
 }
 
-function SingleView({ step, value, onPick }: { step: Step; value?: string; onPick: (v: string) => void }) {
+function SingleView({ step, value, followUpValue, onPick, onFollowUpChange, onContinue, isLast }: {
+  step: Step
+  value?: string
+  followUpValue: string
+  onPick: (v: string) => void
+  onFollowUpChange: (v: string) => void
+  onContinue: () => void
+  isLast: boolean
+}) {
+  const showFollowUp = !!step.followUp && !!value && (!step.followUp.trigger || step.followUp.trigger.includes(value))
   return (
     <div>
       <p className="text-[13px] font-semibold text-brand mb-2.5">{step.eyebrow}</p>
@@ -256,6 +346,24 @@ function SingleView({ step, value, onPick }: { step: Step; value?: string; onPic
           )
         })}
       </div>
+
+      {showFollowUp && (
+        <>
+          <textarea
+            value={followUpValue}
+            onChange={(e) => onFollowUpChange(e.target.value)}
+            placeholder={step.followUp!.placeholder}
+            rows={3}
+            className="w-full mt-3 rounded-2xl bg-white border border-line px-4 py-3.5 text-[15px] text-ink placeholder:text-ink-faint outline-none focus:border-brand transition-colors resize-none"
+          />
+          <button
+            onClick={onContinue}
+            className="mt-4 w-full h-[54px] rounded-2xl bg-brand text-white text-[17px] font-bold hover:bg-brand-hover active:scale-[.99] transition-all"
+          >
+            {isLast ? '제출하기' : '다음'}
+          </button>
+        </>
+      )}
     </div>
   )
 }

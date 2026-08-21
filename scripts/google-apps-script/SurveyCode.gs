@@ -4,13 +4,21 @@
  *  ─ 코드를 바꾼 뒤에는 반드시 "새 배포"를 만들거나 기존 배포를 "수정 > 새 버전"으로 올려야 반영됩니다.
  *
  *  기존 마케팅 설문(리더보드·추천코드·커피 이벤트)용 스크립트에서 COLS만
- *  ScanOps 앱의 실제 7문항에 맞게 바꾼 버전입니다. doPost/doGet 로직은 그대로예요.
+ *  ScanOps 앱의 실제 문항에 맞게 바꾼 버전입니다. doPost/doGet 로직은 그대로예요.
  */
 
 const COLS = [
   'submittedAt', 'userEmail', 'userName',
-  'priorExperience', 'purpose', 'role', 'continueIntent', 'recommendIntent',
-  'likedPoints', 'suggestedFeature',
+  'priorToolUsed', 'priorToolWhat', 'comparisonVsPrior',
+  'purpose',
+  'role', 'roleOther',
+  'reportClarity',
+  'falsePositive', 'falsePositiveDetail',
+  'continueIntent', 'continueReason',
+  'recommendIntent',
+  'likedPoints', 'wishFeature',
+  'missedVuln', 'missedVulnDetail',
+  'scanSpeed',
   'clientId', 'userAgent',
 ];
 
