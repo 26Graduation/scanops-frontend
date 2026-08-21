@@ -249,7 +249,7 @@ function IntroView({ onStart }: { onStart: () => void }) {
         <Icon name="edit-3" size={32} className="text-white" />
       </div>
       <h1 className="text-[26px] font-extrabold text-ink leading-snug tracking-tight">
-        2분이면 끝나요.<br />베타 사용 경험을<br />들려주세요
+        1분이면 끝나요.<br />베타 사용 경험을 들려주세요!
       </h1>
       <p className="mt-3 text-[15px] text-ink-muted leading-relaxed">
         ScanOps를 더 잘 만들기 위한 짧은 설문이에요.<br />정답은 없어요.
@@ -268,7 +268,7 @@ function IntroView({ onStart }: { onStart: () => void }) {
       </div>
 
       <div className="inline-flex items-center gap-1.5 bg-white rounded-full px-3.5 py-2 text-[13px] font-semibold text-ink-sub mt-5">
-        ⏱ 약 2분 · 11문항
+        ⏱ 약 1분 · 11문항
       </div>
       <button
         onClick={onStart}
