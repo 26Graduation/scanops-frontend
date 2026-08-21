@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Icon from '../../../shared/ui/Icon'
+import Button from '../../../shared/ui/Button'
 import { useToast } from '../../../shared/ui/Toast'
 import { useAuth } from '../../../shared/lib/auth'
 
@@ -47,41 +48,34 @@ export default function ErrorReportWidget() {
   }
 
   return (
-    <div className="fixed right-5 bottom-5 z-40 flex flex-col items-end gap-6">
+    <div className="fixed right-5 bottom-5 z-40 flex flex-col items-end gap-3">
       {open && (
-        <div className="w-[640px] rounded-2xl bg-white border border-line shadow-[0_8px_30px_rgba(0,0,0,0.15)] flex flex-col overflow-hidden">
-          <div className="flex items-center justify-between px-8 py-6 border-b border-line bg-surface">
-            <span className="text-[28px] font-bold text-ink">오류 신고</span>
+        <div className="w-[320px] rounded-2xl bg-white border border-line shadow-[0_8px_30px_rgba(0,0,0,0.15)] flex flex-col overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-line bg-surface">
+            <span className="text-[14px] font-bold text-ink">오류 신고</span>
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="w-14 h-14 rounded-lg flex items-center justify-center text-ink-faint hover:bg-field transition-colors"
+              className="w-7 h-7 rounded-lg flex items-center justify-center text-ink-faint hover:bg-field transition-colors"
               aria-label="닫기"
             >
-              <Icon name="x" size={32} />
+              <Icon name="x" size={16} />
             </button>
           </div>
-          <div className="p-8 flex flex-col gap-6">
-            <p className="text-[25px] text-ink-muted leading-relaxed">
+          <div className="p-4 flex flex-col gap-3">
+            <p className="text-[12.5px] text-ink-muted leading-relaxed">
               겪으신 오류나 불편한 점을 적어주시면 팀에 바로 전달돼요.
             </p>
             <textarea
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="어떤 문제가 있었나요?"
-              rows={8}
-              className="w-full rounded-2xl bg-field border border-line px-7 py-5 text-[27px] text-ink placeholder:text-ink-faint outline-none focus:border-brand transition-colors resize-none"
+              rows={4}
+              className="w-full rounded-xl bg-field border border-line px-3.5 py-2.5 text-[13.5px] text-ink placeholder:text-ink-faint outline-none focus:border-brand transition-colors resize-none"
             />
-            <button
-              type="button"
-              onClick={send}
-              disabled={!message.trim() || sending}
-              className="w-full h-[72px] rounded-xl bg-brand text-white text-[26px] font-semibold flex items-center justify-center gap-3 hover:bg-brand-hover active:bg-brand-press transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {sending ? <Icon name="loader" size={30} className="spin" /> : (
-                <>보내기<Icon name="send" size={30} /></>
-              )}
-            </button>
+            <Button block size="sm" rightIcon="send" loading={sending} disabled={!message.trim()} onClick={send}>
+              보내기
+            </Button>
           </div>
         </div>
       )}
@@ -89,7 +83,7 @@ export default function ErrorReportWidget() {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="h-[88px] px-10 rounded-full bg-ink text-white text-[28px] font-semibold shadow-[0_6px_20px_rgba(0,0,0,0.25)] flex items-center justify-center hover:opacity-90 transition-opacity"
+        className="h-[66px] px-[30px] rounded-full bg-ink text-white text-[21px] font-semibold shadow-[0_6px_20px_rgba(0,0,0,0.25)] flex items-center justify-center hover:opacity-90 transition-opacity"
         aria-label={open ? '오류 신고 닫기' : '오류 신고 열기'}
       >
         {open ? '닫기' : '오류 신고'}
