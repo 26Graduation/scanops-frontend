@@ -77,6 +77,20 @@ export default function MyPage() {
           </div>
         </Card>
 
+        {/* beta survey */}
+        <Card pad="lg" className="mt-4 flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-3">
+            <span className="w-10 h-10 rounded-xl bg-brand-soft text-brand flex items-center justify-center shrink-0">
+              <Icon name="edit-3" size={18} />
+            </span>
+            <div>
+              <p className="text-[14.5px] font-bold text-ink">베타 테스트 설문</p>
+              <p className="text-[12.5px] text-ink-muted">1분이면 끝나요. 사용 경험을 들려주세요.</p>
+            </div>
+          </div>
+          <Button size="sm" onClick={() => navigate('/survey')}>설문 참여하기</Button>
+        </Card>
+
         {/* quick links */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
           <QuickLink icon="github" title="연동 관리" sub="GitHub·App 연결" onClick={() => navigate('/integrations')} />
