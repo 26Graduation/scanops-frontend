@@ -117,8 +117,10 @@ export default function ScanForm() {
         const job = await createRepoScan(target, email || user?.email || 'noreply@scanops.io')
         navigate(`/scan/${job.scanId}/status`, { state: { target, mode } })
       }
-    } catch {
-      setError('스캔 요청에 실패했어요. 백엔드 연결 상태를 확인해 주세요.')
+    } catch (err) {
+      // 동시 스캔 한도 초과(429), 잔액 부족(402) 등은 백엔드가 구체적인 사유를 내려준다 —
+      // 뭉뚱그리지 않고 그대로 보여줘야 "왜 실패했는지" 사용자가 알 수 있다.
+      setError(err instanceof Error ? err.message : '스캔 요청에 실패했어요. 백엔드 연결 상태를 확인해 주세요.')
     } finally {
       setLoading(false)
     }

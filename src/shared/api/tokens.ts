@@ -28,7 +28,8 @@ export interface TokenWallet {
   /** @deprecated dastAvailable과 동일한 값. 기존 화면 호환용. */
   websiteScansLeft: number
   periodEnd: string | null
-  maxConcurrentScans: number
+  maxConcurrentDastScans: number
+  maxConcurrentSastScans: number
   topUpPriceKrw: number
   topUpTokens: number
   dastTopUpPriceKrw: number
