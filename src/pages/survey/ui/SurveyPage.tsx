@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Icon from '../../../shared/ui/Icon'
 import { useAuth } from '../../../shared/lib/auth'
-import { submitSurvey } from '../../../shared/api/survey'
+import { completeSurvey, fetchSurveyStatus, submitSurvey } from '../../../shared/api/survey'
 
 type StepType = 'intro' | 'single' | 'text' | 'done'
 
@@ -93,6 +93,14 @@ export default function SurveyPage() {
   const [i, setI] = useState(0)
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [submitting, setSubmitting] = useState(false)
+  const [checking, setChecking] = useState(true)
+
+  // 계정당 1회 제한 — 이미 참여했으면 설문을 열지 않고 바로 마이페이지로 돌려보낸다.
+  useEffect(() => {
+    fetchSurveyStatus()
+      .then((s) => { if (s.completed) navigate('/mypage', { replace: true }); else setChecking(false) })
+      .catch(() => setChecking(false))
+  }, [navigate])
 
   const step = STEPS[i]
   const isQuestion = (s: Step) => s.type !== 'intro' && s.type !== 'done'
@@ -111,6 +119,7 @@ export default function SurveyPage() {
       submittedAt: new Date().toISOString(),
       userAgent: navigator.userAgent,
     })
+    try { await completeSurvey() } catch { /* 참여 표시 실패해도 제출 자체는 끝난 상태로 둔다 */ }
     setSubmitting(false)
   }
 
@@ -127,6 +136,8 @@ export default function SurveyPage() {
   }
 
   const back = () => { if (i > 0) setI(i - 1) }
+
+  if (checking) return <div className="min-h-screen bg-field" />
 
   return (
     <div className="min-h-screen bg-field flex justify-center">
