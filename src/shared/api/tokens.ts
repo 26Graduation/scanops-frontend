@@ -18,6 +18,7 @@ export interface TokenWallet {
   available: number
   monthlyGrant: number
   sourceLinesLeft: number
+  sourceLinesMonthlyLimit: number
   // DAST(웹 점검) — 횟수 단위, 토큰과 무관
   dastSubscriptionRemaining: number
   dastPurchasedRemaining: number

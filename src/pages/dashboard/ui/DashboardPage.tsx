@@ -8,10 +8,11 @@ import Badge from '../../../shared/ui/Badge'
 import ProgressBar from '../../../shared/ui/ProgressBar'
 import { useAuth } from '../../../shared/lib/auth'
 import {
-  fetchUsage, MODE_META, SEVERITY_META,
-  relativeTime, type ScanSummary, type Usage, type Severity, type SeverityCounts,
+  MODE_META, SEVERITY_META,
+  relativeTime, type ScanSummary, type Severity, type SeverityCounts,
 } from '../../../shared/lib/mock'
-import { fetchAllScans } from '../../../shared/api/scan'
+import { fetchRecentScans } from '../../../shared/api/scan'
+import { fetchWallet, type TokenWallet } from '../../../shared/api/tokens'
 
 const SEV_ORDER: Severity[] = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'INFO']
 
@@ -19,11 +20,11 @@ export default function DashboardPage() {
   const navigate = useNavigate()
   const { user } = useAuth()
   const [scans, setScans] = useState<ScanSummary[] | null>(null)
-  const [usage, setUsage] = useState<Usage | null>(null)
+  const [wallet, setWallet] = useState<TokenWallet | null>(null)
 
   useEffect(() => {
-    fetchAllScans().then(setScans)
-    fetchUsage().then(setUsage)
+    fetchRecentScans().then(setScans)
+    fetchWallet().then(setWallet)
   }, [])
 
   const done = scans?.filter((s) => s.status === 'DONE') ?? []
@@ -31,6 +32,9 @@ export default function DashboardPage() {
   done.forEach((s) => SEV_ORDER.forEach((k) => (agg[k] += s.counts[k])))
   const totalFindings = SEV_ORDER.reduce((a, k) => a + agg[k], 0)
   const maxCvss = done.reduce((m, s) => Math.max(m, s.maxCvss), 0)
+
+  const dastUsed = wallet ? wallet.dastMonthlyLimit - wallet.dastAvailable : undefined
+  const sastUsed = wallet ? wallet.sourceLinesMonthlyLimit - wallet.sourceLinesLeft : undefined
 
   return (
     <div className="min-h-screen bg-surface">
@@ -45,10 +49,9 @@ export default function DashboardPage() {
         </div>
 
         {/* usage */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
-          <UsageCard icon="globe" label="DAST 웹 스캔" used={usage?.dastUsed} limit={usage?.dastLimit} unit="회" color="var(--color-scan-web)" />
-          <UsageCard icon="box" label="SAST 레포 분석" used={usage?.sastUsed} limit={usage?.sastLimit} unit="줄" color="var(--color-scan-code)" big />
-          <UsageCard icon="git-pull-request" label="PR 자동 분석" used={usage?.actionsUsed} limit={usage?.actionsLimit} unit="줄" color="var(--color-scan-pr)" big />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+          <UsageCard icon="globe" label="DAST 웹 스캔" used={dastUsed} limit={wallet?.dastMonthlyLimit} unit="회" color="var(--color-scan-web)" />
+          <UsageCard icon="box" label="SAST · GitHub 액션 (코드 분석)" used={sastUsed} limit={wallet?.sourceLinesMonthlyLimit} unit="줄" color="var(--color-scan-code)" big />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
