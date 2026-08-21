@@ -187,13 +187,8 @@ export default function SurveyPage() {
     if (j >= 0) setI(j)
   }
 
-  const followUpTriggered = (s: Step, v?: string) =>
-    !!s.followUp && !!v && (!s.followUp.trigger || s.followUp.trigger.includes(v))
-
   const pick = (v: string) => {
-    const next = { ...answers, [step.id]: v }
-    setAnswers(next)
-    if (!followUpTriggered(step, v)) setTimeout(() => goNext(next), 220)
+    setAnswers((a) => ({ ...a, [step.id]: v }))
   }
 
   if (checking) return <div className="min-h-screen bg-field" />
@@ -260,12 +255,12 @@ function IntroView({ onStart }: { onStart: () => void }) {
         ScanOps를 더 잘 만들기 위한 짧은 설문이에요.<br />정답은 없어요.
       </p>
 
-      <div className="w-full mt-6 rounded-2xl bg-brand-soft border border-brand-soft px-5 py-4 flex items-center gap-3.5 text-left">
-        <span className="w-11 h-11 rounded-xl bg-brand text-white flex items-center justify-center shrink-0">
+      <div className="w-full mt-6 rounded-2xl bg-danger-soft border border-danger-soft px-5 py-4 flex items-center gap-3.5 text-left">
+        <span className="w-11 h-11 rounded-xl bg-danger text-white flex items-center justify-center shrink-0">
           <Icon name="zap" size={20} />
         </span>
         <div>
-          <p className="text-[15px] font-bold text-brand-press">설문 끝까지 완료하면</p>
+          <p className="text-[17px] font-bold text-danger">설문 끝까지 완료하면</p>
           <p className="text-[13px] text-ink-sub leading-relaxed mt-0.5">
             정식 출시 때 <b className="text-ink font-bold">SAST 토큰 3만 줄</b>을 지급해드려요.
           </p>
@@ -348,21 +343,22 @@ function SingleView({ step, value, followUpValue, onPick, onFollowUpChange, onCo
       </div>
 
       {showFollowUp && (
-        <>
-          <textarea
-            value={followUpValue}
-            onChange={(e) => onFollowUpChange(e.target.value)}
-            placeholder={step.followUp!.placeholder}
-            rows={3}
-            className="w-full mt-3 rounded-2xl bg-white border border-line px-4 py-3.5 text-[15px] text-ink placeholder:text-ink-faint outline-none focus:border-brand transition-colors resize-none"
-          />
-          <button
-            onClick={onContinue}
-            className="mt-4 w-full h-[54px] rounded-2xl bg-brand text-white text-[17px] font-bold hover:bg-brand-hover active:scale-[.99] transition-all"
-          >
-            {isLast ? '제출하기' : '다음'}
-          </button>
-        </>
+        <textarea
+          value={followUpValue}
+          onChange={(e) => onFollowUpChange(e.target.value)}
+          placeholder={step.followUp!.placeholder}
+          rows={3}
+          className="w-full mt-3 rounded-2xl bg-white border border-line px-4 py-3.5 text-[15px] text-ink placeholder:text-ink-faint outline-none focus:border-brand transition-colors resize-none"
+        />
+      )}
+
+      {value && (
+        <button
+          onClick={onContinue}
+          className="mt-4 w-full h-[54px] rounded-2xl bg-brand text-white text-[17px] font-bold hover:bg-brand-hover active:scale-[.99] transition-all"
+        >
+          {isLast ? '제출하기' : '다음'}
+        </button>
       )}
     </div>
   )
