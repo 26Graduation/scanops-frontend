@@ -41,11 +41,11 @@ export default function DashboardPage() {
             <h1 className="text-[26px] font-bold text-ink tracking-tight">안녕하세요, {user?.name}님</h1>
             <p className="mt-1 text-[14.5px] text-ink-muted">오늘도 안전하게. 최근 보안 현황을 확인하세요.</p>
           </div>
-          <Button leftIcon="target" onClick={() => navigate('/scan')}>새 스캔 시작</Button>
+          <Button data-tour="dashboard-new-scan" leftIcon="target" onClick={() => navigate('/scan')}>새 스캔 시작</Button>
         </div>
 
         {/* usage */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+        <div data-tour="usage-cards" className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
           <UsageCard icon="globe" label="DAST 웹 스캔" used={usage?.dastUsed} limit={usage?.dastLimit} unit="회" color="var(--color-scan-web)" />
           <UsageCard icon="box" label="SAST 레포 분석" used={usage?.sastUsed} limit={usage?.sastLimit} unit="줄" color="var(--color-scan-code)" big />
           <UsageCard icon="git-pull-request" label="PR 자동 분석" used={usage?.actionsUsed} limit={usage?.actionsLimit} unit="줄" color="var(--color-scan-pr)" big />
@@ -53,7 +53,7 @@ export default function DashboardPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
           {/* posture */}
-          <Card className="lg:col-span-2" pad="lg">
+          <Card data-tour="posture-card" className="lg:col-span-2" pad="lg">
             <div className="flex items-center justify-between">
               <h2 className="text-[17px] font-bold text-ink">보안 현황</h2>
               <button onClick={() => navigate('/reports')} className="text-[13px] text-brand font-semibold hover:underline flex items-center gap-1">
@@ -91,17 +91,17 @@ export default function DashboardPage() {
               <span className="text-[13px] font-bold">ScanOps 엔진</span>
             </div>
             <p className="mt-2 text-[13.5px] text-ink-sub leading-relaxed">
-              자체 파인튜닝 모델 + 정적분석 하이브리드가 OWASP 외부 표준에서 상용 모델을 능가합니다.
+              자체 로컬 모델 + 그래프 분석 하이브리드로 코드를 검사해요. 외부 API로 코드를 보내지 않아요.
             </p>
             <div className="grid grid-cols-2 gap-2 mt-3">
-              <Mini label="탐지율" value="89.1%" />
-              <Mini label="오탐률" value="12.7%" />
+              <Mini label="외부 전송" value="0건" />
+              <Mini label="탐지 방식" value="하이브리드" />
             </div>
           </Card>
         </div>
 
         {/* recent scans */}
-        <Card className="mt-4" pad="none">
+        <Card data-tour="recent-scans-card" className="mt-4" pad="none">
           <div className="flex items-center justify-between px-5 py-4 border-b border-line">
             <h2 className="text-[17px] font-bold text-ink">최근 스캔</h2>
             <button onClick={() => navigate('/reports')} className="text-[13px] text-brand font-semibold hover:underline">전체 보기</button>
