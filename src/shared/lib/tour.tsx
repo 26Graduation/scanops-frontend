@@ -28,10 +28,10 @@ export const TOUR_STEPS: TourStep[] = [
     placement: 'bottom',
   },
   {
-    id: 'posture',
+    id: 'token-balance',
     selector: '[data-tour="posture-card"]',
-    title: '보안 현황 요약',
-    desc: '완료된 스캔의 취약점을 심각도별로 모아 보여줘요. 최고 CVSS 점수도 함께 확인하세요.',
+    title: '토큰 현황',
+    desc: '이번 달 받은 토큰과 남은 잔액을 확인해요. 진행 중인 스캔이 예약해 둔 토큰도 여기 표시돼요.',
     placement: 'bottom',
   },
   {
