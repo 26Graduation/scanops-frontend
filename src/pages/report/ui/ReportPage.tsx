@@ -17,10 +17,9 @@ import { isRealId, fetchRealReport } from '../../../shared/api/scan'
 
 const SEV_ORDER: Severity[] = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'INFO']
 
-// SAST 엔진 표시 라벨(리포트 헤더). 실제 배포 = rebuild (api_rebuild: 2026-07 재구축
-// Qwen3.5-9B 단일 모델, LLM은 RunPod llama.cpp 워커). 버전이 응답에 실려오지 않아
-// 여기 표기만 하므로, 차기 버전 배포 시 이 한 줄만 갱신.
-const SAST_ENGINE_LABEL = 'ScanOps Rebuild (Qwen3.5-9B)'
+// The API does not yet return a per-scan engine identifier. Keep this label accurate for
+// both routes: Java uses CPG + Qwen3.8-Max, while other languages retain the legacy engine.
+const SAST_ENGINE_LABEL = 'ScanOps SAST (언어별 분석 엔진)'
 
 export default function ReportPage() {
   const { t } = useTranslation('report')
