@@ -8,67 +8,73 @@
     "menuClose": "Close menu"
   },
   "hero": {
-    "badge": "Your source code is never sent to external APIs",
+    "badge": "Java is analyzed with both CPG and Qwen3.8-Max",
     "titleLine1": "Is your code,",
     "titleHighlight": "actually safe?",
-    "subtitle1": "We never send your code to external services like ChatGPT or Claude — a dedicated local security model and graph analysis engine find vulnerabilities directly, in-house.",
+    "subtitle1": "Java combines Joern code property graphs with Qwen3.8-Max semantic review, while other languages keep their existing analysis engine.",
     "subtitle2": "Just drop in a URL or GitHub repo, and we'll walk you through the risk level and how to fix it — all in one clear report.",
     "ctaStart": "Start a free scan",
     "ctaBenchmark": "See the benchmark results",
     "note": "Sign up for 1 free website security scan · No card required"
   },
   "stats": {
-    "noExternalCode": { "value": "0", "label": "Source code sent to external APIs" },
-    "falsePositiveRate": { "value": "84.7%", "label": "False-positive filter removal rate · beats commercial APIs (83.9%)" },
-    "hybrid": { "value": "Hybrid", "label": "Graph data-flow tracing + AI rule-based judgment" },
+    "noExternalCode": { "value": "Java", "label": "Joern CPG + Qwen3.8-Max ensemble" },
+    "falsePositiveRate": { "value": "2/2", "label": "Vulnerable and safe Java server checks completed" },
+    "hybrid": { "value": "37 sec", "label": "Two-file live site integration check" },
     "threeModes": { "value": "3", "label": "DAST · SAST · PR auto-analysis, all in one" }
   },
   "benchmark": {
     "tag": "Benchmark",
-    "title": "Our false-positive filtering beats commercial APIs",
-    "sub": "Without ever sending your code off-site, our local model filters false positives more accurately than commercial APIs.",
+    "title": "We verified the Java analysis path on the live site",
+    "sub": "We connected the frontend, backend, Java analysis server, Joern, and Qwen and checked both vulnerable and safe examples.",
     "card1": {
-      "title": "False-positive filtering that beats commercial APIs",
-      "desc": "Unlike commercial APIs that send code off-site, our local-only model achieved a higher false-positive removal rate.",
-      "scanopsLabel": "ScanOps (local) false-positive removal rate",
-      "commercialLabel": "Commercial API (Claude) false-positive removal rate",
-      "footnote": "* False-positive filtering comparison based on the jquery-ui repo (not a detection-rate metric)."
+      "title": "Vulnerable and safe examples checked together",
+      "desc": "The vulnerable Java example produced CWE-79 at the original line, while the safe example produced no finding.",
+      "scanopsLabel": "Vulnerable Java finding",
+      "commercialLabel": "Safe Java warning",
+      "vulnerableValue": "1",
+      "safeValue": "0",
+      "footnote": "* This is a two-file functional demonstration, not evidence of detection superiority."
     },
     "card2": {
-      "title": "Fully local processing",
-      "desc": "From rule generation to false-positive filtering to detection, every step runs on our own local model (Qwen3.5-9B).",
+      "title": "Java-specific ensemble analysis",
+      "desc": "We preserve results and evidence from different analysis methods and merge them into one report.",
       "steps": {
-        "ruleGeneration": "Rule generation",
-        "falsePositiveFiltering": "False-positive filtering",
-        "vulnDetection": "Vulnerability detection"
+        "staticAnalysis": "Static data-flow analysis",
+        "semanticReview": "Code semantic review",
+        "resultMerge": "Finding and evidence merge"
       },
-      "localModelBadge": "Local model",
-      "footer": "There's no step where your code is ever sent to an external API like ChatGPT or Claude."
+      "badges": {
+        "staticAnalysis": "Joern CPG",
+        "semanticReview": "Qwen3.8-Max",
+        "resultMerge": "ScanOps"
+      },
+      "footer": "Java semantic review sends the required code context to the DashScope Qwen API."
     }
   },
   "why": {
     "tag": "Why Us",
-    "title": "Smaller, but more accurate at security",
-    "sub": "Instead of scaling up like general-purpose large models, we focused on security alone — and it found more.",
+    "title": "Separate analysis paths for each language and purpose",
+    "sub": "Java combines graph evidence with semantic review, while other languages keep their existing analysis path.",
     "cards": {
       "localModel": {
-        "title": "A local model trained only on security",
-        "desc": "Rule generation, false-positive filtering, and detection all run on our own local model (Qwen3.5-9B). Your code is never sent to external APIs like ChatGPT or Claude."
+        "title": "Java CPG + Qwen ensemble",
+        "desc": "Joern finds static data flows and Qwen3.8-Max separately reviews code semantics. Reports retain the source and evidence for each finding."
       },
       "wholeRepo": {
-        "title": "The whole repo, not just one file",
-        "desc": "For JS/TS repos, we connect the entire codebase with a Code Property Graph (CPG) to trace data flow across files. This catches vulnerabilities that file-by-file analysis is structurally bound to miss."
+        "title": "Repository-level Java CPG analysis",
+        "desc": "Submitted Java files are passed to Joern as one job to inspect code structure and data flow. Results preserve the original file and line."
       },
       "confidentFilter": {
-        "title": "We only remove false positives when we're certain",
-        "desc": "Each API's risk level is judged by 8 hand-built rules plus rules learned per repository, while a graph algorithm traces the actual vulnerability flow. Our false-positive filter only removes code it's confident is safe — a false alarm beats a missed vulnerability."
+        "title": "Incomplete analysis is reported as failure",
+        "desc": "Connection failures, missing files, timeouts, and PARTIAL results are not converted into a safe verdict. A failure state tells users when to retry."
       }
     }
   },
   "security": {
     "tag": "Code Security",
-    "title": "Your source code never reaches our servers",
-    "sub": "The strongest security isn't a policy — it's architecture. ScanOps is built so your code never leaves your environment.",
+    "title": "A transparent path for handling code",
+    "sub": "URL scans require no source code, while repository and PR scans process code through the ScanOps analysis path.",
     "flow1": {
       "badge": "Free · Pro",
       "title": "URL scan — no code transfer",
@@ -76,16 +82,16 @@
       "note": "Your source code itself is never sent to our servers."
     },
     "flow2": {
-      "badge": "GitHub Actions",
-      "title": "Repo scan — analyzed inside your own infrastructure",
-      "steps": ["A PR event triggers the scan", "Runs directly inside your own Actions runner", "Only the results (report) are sent to ScanOps"],
-      "note": "Your code never leaves your infrastructure."
+      "badge": "GitHub Repository · App",
+      "title": "Repo and PR scan — ScanOps analysis path",
+      "steps": ["Read the selected code from GitHub", "Route it to the language-specific engine", "Store findings and evidence in the report"],
+      "note": "Java semantic review sends the required code context to the external DashScope Qwen API."
     },
     "features": {
-      "memoryOnly": { "title": "Processed in memory only", "desc": "Only results are stored in the DB — never your code" },
-      "immediateDeletion": { "title": "Discarded immediately after analysis", "desc": "Verified with a delete button and deletion logs" },
+      "memoryOnly": { "title": "Result-focused storage", "desc": "The DB stores vulnerability results and report metadata" },
+      "immediateDeletion": { "title": "Temporary workspace cleanup", "desc": "Joern removes temporary analysis files after each job" },
       "readOnly": { "title": "Read-only access", "desc": "Requests only the minimum required GitHub scope" },
-      "httpsEncryption": { "title": "HTTPS transport encryption", "desc": "All communication is encrypted by default" }
+      "httpsEncryption": { "title": "Protected communication paths", "desc": "Public traffic uses HTTPS; the analysis server is private-VPC only" }
     }
   },
   "scanModes": {
@@ -93,8 +99,8 @@
     "title": "From web to repo to PR, all in one",
     "sub": "Choose the mode that fits what you're scanning. Usage is tracked transparently for each mode.",
     "dast": { "title": "Website dynamic analysis", "desc": "Scans your running app from the outside. Diagnoses with just a URL — no code transfer required." },
-    "sast": { "title": "Full-repo static analysis", "desc": "An AI model covers every language, and for JS/TS repos we also apply graph analysis that traces data flow across files." },
-    "actions": { "title": "Automatic PR analysis", "desc": "Inspects the PR diff inside your own infrastructure and sends only the results. Your code never leaves." }
+    "sast": { "title": "Full-repo static analysis", "desc": "Java combines Joern CPG with Qwen3.8-Max, while other languages use the existing analysis engine." },
+    "actions": { "title": "Automatic PR analysis", "desc": "The GitHub App sends changed PR code through the ScanOps analysis path and reports findings on the relevant lines." }
   },
   "pricing": {
     "tag": "Pricing",
@@ -124,7 +130,7 @@
     "ctaLogin": "Log in"
   },
   "footer": {
-    "copyright": "© 2026 ScanOps · In-house AI security scanning that never sends your code out"
+    "copyright": "© 2026 ScanOps · Security analysis combining CPG and AI"
   },
   "reportPreview": {
     "scanCompleted": "Scan completed {{date}}",
@@ -135,6 +141,6 @@
       "criticalValue": "1",
       "highValue": "1"
     },
-    "privacyNote": "Your source code is never stored on our servers — only the results are"
+    "privacyNote": "Results are stored and temporary analysis workspaces are cleaned up"
   }
 }

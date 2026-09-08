@@ -111,8 +111,8 @@
       },
       "code": {
         "fetch": "레포 가져오기",
-        "analyze": "AI 모델 정적 분석",
-        "taint": "taint 그래프 오탐 억제",
+        "analyze": "언어별 정적 분석",
+        "taint": "CPG·의미 검토 결과 병합",
         "report": "리포트 생성"
       }
     },
@@ -131,8 +131,9 @@
       "retryButton": "다시 스캔"
     },
     "footer": {
-      "realNotice": "실제 동적 스캔은 몇 분 걸릴 수 있어요. 이 페이지를 떠나도 진행됩니다.",
-      "mockNotice": "코드는 외부로 전송되지 않고 분석 후 즉시 폐기됩니다."
+      "webRealNotice": "실제 동적 스캔은 몇 분 걸릴 수 있어요. 이 페이지를 떠나도 진행됩니다.",
+      "codeRealNotice": "레포 분석은 코드량에 따라 오래 걸릴 수 있어요. 이 페이지를 떠나도 진행됩니다.",
+      "mockNotice": "저장소 코드는 ScanOps 분석 경로에서 처리되며, Java 의미 검토 문맥은 DashScope Qwen API로 전달됩니다."
     }
   }
 }

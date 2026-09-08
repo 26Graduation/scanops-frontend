@@ -16,9 +16,9 @@
   },
   "engine": {
     "title": "ScanOps 엔진",
-    "desc": "자체 로컬 모델 + 그래프 분석 하이브리드로 코드를 검사해요. 외부 API로 코드를 보내지 않아요.",
-    "externalLabel": "외부 전송",
-    "externalValue": "0건",
+    "desc": "Java는 Joern CPG와 Qwen3.8-Max로, 다른 언어는 기존 분석 엔진으로 검사해요.",
+    "externalLabel": "Java 의미 검토",
+    "externalValue": "DashScope",
     "methodLabel": "탐지 방식",
     "methodValue": "하이브리드"
   },

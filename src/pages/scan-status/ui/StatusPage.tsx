@@ -155,7 +155,9 @@ export default function StatusPage() {
 
           <p className="mt-5 text-center text-[12px] text-ink-faint flex items-center justify-center gap-1.5">
             <Icon name="lock" size={13} />
-            {real ? t('statusPage.footer.realNotice') : t('statusPage.footer.mockNotice')}
+            {real
+              ? t(mode === 'WEBSITE' ? 'statusPage.footer.webRealNotice' : 'statusPage.footer.codeRealNotice')
+              : t('statusPage.footer.mockNotice')}
           </p>
         </div>
       </main>

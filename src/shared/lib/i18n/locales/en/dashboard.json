@@ -16,9 +16,9 @@
   },
   "engine": {
     "title": "ScanOps Engine",
-    "desc": "We inspect your code with a hybrid of our own local model and graph analysis. Your code is never sent to an external API.",
-    "externalLabel": "External transfers",
-    "externalValue": "0",
+    "desc": "Java uses Joern CPG with Qwen3.8-Max, while other languages use the existing analysis engine.",
+    "externalLabel": "Java semantic review",
+    "externalValue": "DashScope",
     "methodLabel": "Detection method",
     "methodValue": "Hybrid"
   },

@@ -164,11 +164,11 @@ export default function LandingPage() {
               <div className="mt-6 grid grid-cols-2 gap-4">
                 <div className="rounded-xl bg-white/10 border border-brand/40 p-5">
                   <p className="text-[13px] text-brand-soft font-semibold">{t('benchmark.card1.scanopsLabel')}</p>
-                  <p className="text-[36px] font-extrabold text-white mt-1.5 tnum leading-none">84.7<span className="text-lg">%</span></p>
+                  <p className="text-[36px] font-extrabold text-white mt-1.5 tnum leading-none">{t('benchmark.card1.vulnerableValue')}</p>
                 </div>
                 <div className="rounded-xl bg-white/5 border border-white/10 p-5">
                   <p className="text-[13px] text-ink-faint font-semibold">{t('benchmark.card1.commercialLabel')}</p>
-                  <p className="text-[36px] font-extrabold text-ink-faint mt-1.5 tnum leading-none">83.9<span className="text-lg">%</span></p>
+                  <p className="text-[36px] font-extrabold text-ink-faint mt-1.5 tnum leading-none">{t('benchmark.card1.safeValue')}</p>
                 </div>
               </div>
               <p className="mt-6 text-[12.5px] text-ink-faint leading-relaxed">{t('benchmark.card1.footnote')}</p>
@@ -177,11 +177,15 @@ export default function LandingPage() {
               <p className="text-base font-bold text-ink mb-1">{t('benchmark.card2.title')}</p>
               <p className="text-[13px] text-ink-muted mb-5 leading-relaxed">{t('benchmark.card2.desc')}</p>
               <div className="flex flex-col gap-3">
-                {[t('benchmark.card2.steps.ruleGeneration'), t('benchmark.card2.steps.falsePositiveFiltering'), t('benchmark.card2.steps.vulnDetection')].map((step) => (
+                {[
+                  [t('benchmark.card2.steps.staticAnalysis'), t('benchmark.card2.badges.staticAnalysis')],
+                  [t('benchmark.card2.steps.semanticReview'), t('benchmark.card2.badges.semanticReview')],
+                  [t('benchmark.card2.steps.resultMerge'), t('benchmark.card2.badges.resultMerge')],
+                ].map(([step, badge]) => (
                   <div key={step} className="flex items-center gap-3 rounded-xl bg-surface border border-line px-4 py-3">
                     <span className="text-success shrink-0"><Icon name="check-circle" size={18} /></span>
                     <span className="text-[14px] font-semibold text-ink">{step}</span>
-                    <span className="ml-auto text-[12px] font-semibold text-ink-muted">{t('benchmark.card2.localModelBadge')}</span>
+                    <span className="ml-auto text-[12px] font-semibold text-ink-muted">{badge}</span>
                   </div>
                 ))}
               </div>
